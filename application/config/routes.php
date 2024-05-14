@@ -57,4 +57,6 @@ $route['signup'] = "AuthController";
 $route['register'] = 'AuthController/register';
 $route['login'] = 'AuthController/login';
 
+$route['home'] = 'UserPageController/index';
+
 $route['session_details'] = 'AuthController/getSessionDetails';

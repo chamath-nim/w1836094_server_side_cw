@@ -54,12 +54,20 @@ class AuthController extends CI_Controller {
             $user = $this->UserModel->login($username, $password);
             
             if ($user) {
+
+                echo 
+                $auth_user_details = array(
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'email' => $user->email
+                );
+
                 // Set session data
-                $this->session->set_userdata('user_id', $user['id']);
-                $user_id = $this->session->userdata('user_id');
+                $this->session->set_userdata('authenticated', 1);
+                $this->session->set_userdata('auth_user', $auth_user_details);
 
                 // Redirect to dashboard or any other page
-                redirect('session_details');
+                redirect('home');
             } else {
                 // Display error message
                 $data['error'] = 'Invalid username or password';
@@ -67,25 +75,6 @@ class AuthController extends CI_Controller {
             }
         }
     }   
-
-    public function getSessionDetails() {
-        // Get session creation time
-        $creation_time = $this->session->userdata('session_creation_time');
-        // Get last activity time
-        $last_activity = $this->session->userdata('last_activity');
-        // Get expiration time
-        $expiration_time = $this->session->userdata('session_expiration');
-        
-        // Convert Unix timestamps to readable format
-        $creation_time_formatted = date('Y-m-d H:i:s', $creation_time);
-        $last_activity_time_formatted = date('Y-m-d H:i:s', $last_activity);
-        $expiration_time_formatted = date('Y-m-d H:i:s', $expiration_time);
-        
-        // Display session time details
-        echo "Session Creation Time: " . $creation_time_formatted . "<br>";
-        echo "Last Activity Time: " . $last_activity_time_formatted . "<br>";
-        echo "Expiration Time: " . $expiration_time_formatted . "<br>";
-    }
     
 
     public function logout() {
