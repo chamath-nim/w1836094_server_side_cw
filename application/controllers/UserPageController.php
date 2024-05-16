@@ -7,8 +7,18 @@ class UserPageController extends CI_Controller {
     public function index(){
         // $this->load->view( 'header' );
         // $this->load->view( 'sidebar' );
+
+        if (!$this->session->userdata('authenticated')) {
+            // Redirect to login page
+            redirect('login');
+        }
+        // Load the home page view        
         $this->load->view( 'view_home' );
         
         
+    }
+
+    public function myProfile(){
+        $this->load->view('profile');
     }
 }

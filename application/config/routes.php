@@ -56,7 +56,12 @@ $route['translate_uri_dashes'] = FALSE;
 $route['signup'] = "AuthController";
 $route['register'] = 'AuthController/register';
 $route['login'] = 'AuthController/login';
+$route['logout'] = 'AuthController/logout';
+
+$route['questions'] = 'QuestionController/create_question';
 
 $route['home'] = 'UserPageController/index';
+$route['profile'] = 'UserPageController/myProfile';
+
 
 $route['session_details'] = 'AuthController/getSessionDetails';

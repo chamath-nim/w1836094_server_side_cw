@@ -77,9 +77,9 @@
             <h4 class="text-center mt-3">Menu</h4>
             <hr class="bg-light">
             <ul class="list-unstyled">
-                <li><a href="/questions" class="text-white">Home</a></li>
-                <li><a href="/myquestions" class="text-white">Questions</a></li>
-                <li><a href="/profile" class="text-white">Profile</a></li>
+                <li><a href="home" class="text-white">Home</a></li>
+                <li><a href="myquestions" class="text-white">Questions</a></li>
+                <li><a href="profile" class="text-white">Profile</a></li>
             </ul>
         </div>
     </div>

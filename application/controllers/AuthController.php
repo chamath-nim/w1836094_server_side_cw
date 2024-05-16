@@ -14,74 +14,72 @@ class AuthController extends CI_Controller {
         $this->load->view( 'register' );
     }
 
-    public function register(){
+    public function register() {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                // Parse the incoming JSON data
+                $data = json_decode(file_get_contents("php://input"), true);
+                
+                // Check if the data is properly parsed
+                if ($data) {
+                
+                    // Insert the data into the database
+                    $user = $this->UserModel->register($data);
 
-        // Validation rules
-        $this->form_validation->set_rules('username', 'Username', 'required');
-        $this->form_validation->set_rules('email', 'Email', 'required');
-        $this->form_validation->set_rules('password', 'Password', 'required');
-
-        if ($this->form_validation->run() == FALSE) {
-            // Load registration view
-            $this->load->view('register');
-        } else {
-            // Insert user into database
-            $data = array(
-                'username' => $this->input->post('username'),
-                'email'=> $this->input->post('email'),
-                'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT)
-            );
-
-            $this->UserModel->register($data);
-            // Redirect to login page
-            redirect('login');
-        }
+                    if ($user) echo json_encode(['success' => true]);
+                     
+                    else echo json_encode(['success' => false, 'message' => 'Failed to insert user data into the database']);
+                    
+                } else echo json_encode(['success' => false, 'error' => 'Failed to parse data']);
+                
+            } else echo json_encode(['success' => false, 'error' => 'Invalid request']);
+            
+        } else $this->load->view( 'register');
     }
-
+    
     public function login(){
 
-        // Validation rules
-        $this->form_validation->set_rules('username', 'Username', 'required');
-        $this->form_validation->set_rules('password', 'Password', 'required');
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                // Parse the incoming JSON data
+                $data = json_decode(file_get_contents("php://input"), true);
         
-        if ($this->form_validation->run() == FALSE) {
-            // Load login view
-            $this->load->view('login');
-        } else {
-            // Authenticate user
-            $username = $this->input->post('username');
-            $password = $this->input->post('password');
-            $user = $this->UserModel->login($username, $password);
+                if ($data) {
+                    $username = $data['username'];
+                    $password = $data['password'];
+        
+                    // Insert the data into the database
+                    $user = $this->UserModel->login($username, $password);
+        
+                    if ($user) {
+                        $auth_user_details = [
+                            'id' => $user['user_id'],
+                            'username' => $user['username']
+                        ];
+        
+                        // Set session data
+                        $this->session->set_userdata('authenticated', true);
+                        $this->session->set_userdata('auth_user', $auth_user_details); 
+                        
+                        echo json_encode(['success' => true]);
+                    } 
+                    else echo json_encode(['success' => false]);
+                    
+                } 
+                else echo json_encode(['success' => false, 'error' => 'Failed to parse data']);
+            } 
+            else echo json_encode(['success' => false, 'error' => 'Invalid request']);
             
-            if ($user) {
-
-                echo 
-                $auth_user_details = array(
-                    'id' => $user->id,
-                    'username' => $user->username,
-                    'email' => $user->email
-                );
-
-                // Set session data
-                $this->session->set_userdata('authenticated', 1);
-                $this->session->set_userdata('auth_user', $auth_user_details);
-
-                // Redirect to dashboard or any other page
-                redirect('home');
-            } else {
-                // Display error message
-                $data['error'] = 'Invalid username or password';
-                $this->load->view('login', $data);
-            }
-        }
-    }   
-    
+        } 
+        else  $this->load->view('login');
+        
+    }
 
     public function logout() {
+        
         // Destroy session
         $this->session->sess_destroy();
         // Redirect to login page
-        redirect('auth/login');
+        redirect('login');
     }
-
 }

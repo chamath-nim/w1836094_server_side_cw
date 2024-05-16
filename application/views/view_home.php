@@ -84,9 +84,7 @@
     }
 
     .main-content {
-        /* Adjust based on your header height */
         margin-left: 220px;
-        /* Adjust based on your sidebar width */
         padding: 20px;
     }
     </style>
@@ -98,22 +96,6 @@
             <h1 class="text-capitalize">Questions</h1>
             <button class="ask-question-btn" onclick="togglePopupForm()">Ask Question</button>
         </div>
-        <hr>
-        <?php foreach ($questions as $question): ?>
-        <div class="question-container">
-            <div class="question">
-                <h3><?php echo $question['title']; ?></h3>
-                <?php
-                    $escapedBody = htmlspecialchars($question['body'], ENT_QUOTES);
-                ?>
-                <button class="answer-btn" onclick="redirectToAnswer(this)"
-                    data-title="<?php echo $question['title']; ?>" data-body="<?php echo $escapedBody; ?>"
-                    data-id="<?php echo $question['question_id']; ?>">Answer</button>
-                <p>| Votes: <?php echo $question['votes']; ?></p>
-            </div>
-        </div>
-        <hr>
-        <?php endforeach;?>
 
         <div class="popup-background" id="popupBackground" style="display: none;" onclick="closePopupForm()"></div>
         <div class="popup-form" id="popupForm" style="display: none;">
@@ -128,37 +110,68 @@
             </form>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.1/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone-min.js"></script>
     <script>
-    function togglePopupForm() {
-        var form = document.getElementById("popupForm");
-        var background = document.getElementById("popupBackground");
-        if (form.style.display === "none") {
-            form.style.display = "block";
-            background.style.display = "block";
-        } else {
-            form.style.display = "none";
-            background.style.display = "none";
+    // Backbone Model
+    var QuestionModel = Backbone.Model.extend({
+        url: 'questions'
+    });
+
+    // Backbone View for the form
+    var QuestionFormView = Backbone.View.extend({
+        el: '.main-content',
+
+        events: {
+            'click .ask-question-btn': 'togglePopupForm',
+            'click .popup-background': 'closePopupForm',
+            'submit form': 'submitForm'
+        },
+
+        initialize: function() {
+            this.$popupForm = this.$('#popupForm');
+            this.$popupBackground = this.$('#popupBackground');
+        },
+
+        togglePopupForm: function() {
+            this.$popupForm.toggle();
+            this.$popupBackground.toggle();
+        },
+
+        closePopupForm: function() {
+            this.$popupForm.hide();
+            this.$popupBackground.hide();
+        },
+
+        submitForm: function(event) {
+            event.preventDefault();
+
+            var formData = {
+                title: this.$('#title').val(),
+                body: this.$('#body').val(),
+                tags: this.$('#tags').val()
+            };
+
+            var question = new QuestionModel(formData);
+
+            question.save(null, {
+                success: function(model, response) {
+                    console.log('Form submitted successfully:', response);
+                },
+                error: function(model, response) {
+                    console.error('Error submitting form:', response);
+                }
+            });
+
+            this.togglePopupForm();
         }
-    }
+    });
 
-    function closePopupForm() {
-        var form = document.getElementById("popupForm");
-        var background = document.getElementById("popupBackground");
-        form.style.display = "none";
-        background.style.display = "none";
-    }
-
-    function redirectToAnswer(button) {
-        var title = button.getAttribute('data-title');
-        var body = button.getAttribute('data-body');
-        var id = button.getAttribute('data-id');
-        var encodedTitle = encodeURIComponent(title);
-        var encodedBody = encodeURIComponent(body);
-        var encodedId = encodeURIComponent(id);
-        var url = '/answers?title=' + encodedTitle + '&body=' + encodedBody + '&question_id=' + encodedId;
-        window.location.assign(url);
-    }
+    var questionFormView = new QuestionFormView();
     </script>
+
+
 </body>
 
 </html>
