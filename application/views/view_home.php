@@ -94,10 +94,10 @@
     <div class="main-content">
         <div class="question-header">
             <h1 class="text-capitalize">Questions</h1>
-            <button class="ask-question-btn" onclick="togglePopupForm()">Ask Question</button>
+            <button class="ask-question-btn">Ask Question</button>
         </div>
 
-        <div class="popup-background" id="popupBackground" style="display: none;" onclick="closePopupForm()"></div>
+        <div class="popup-background" id="popupBackground" style="display: none;"></div>
         <div class="popup-form" id="popupForm" style="display: none;">
             <form action="questions" method="POST">
                 <label for="title">Question </label>
@@ -109,6 +109,10 @@
                 <button type="submit">Submit</button>
             </form>
         </div>
+
+        <div id="questionList">
+        </div>
+
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.1/underscore-min.js"></script>
@@ -116,7 +120,7 @@
     <script>
     // Backbone Model
     var QuestionModel = Backbone.Model.extend({
-        url: 'questions'
+        url: 'create_questions'
     });
 
     // Backbone View for the form
@@ -132,6 +136,7 @@
         initialize: function() {
             this.$popupForm = this.$('#popupForm');
             this.$popupBackground = this.$('#popupBackground');
+            _.bindAll(this, 'togglePopupForm', 'closePopupForm', 'submitForm');
         },
 
         togglePopupForm: function() {
@@ -142,6 +147,12 @@
         closePopupForm: function() {
             this.$popupForm.hide();
             this.$popupBackground.hide();
+        },
+
+        clearForm: function() {
+            this.$('#title').val('');
+            this.$('#body').val('');
+            this.$('#tags').val('');
         },
 
         submitForm: function(event) {
@@ -155,9 +166,15 @@
 
             var question = new QuestionModel(formData);
 
+            var self = this;
             question.save(null, {
                 success: function(model, response) {
                     console.log('Form submitted successfully:', response);
+                    self.closePopupForm();
+                    self.clearForm();
+                    questionListView.collection.fetch({
+                        reset: true
+                    });
                 },
                 error: function(model, response) {
                     console.error('Error submitting form:', response);
@@ -168,10 +185,59 @@
         }
     });
 
+    // Backbone Collection for Questions
+    var QuestionCollection = Backbone.Collection.extend({
+        url: 'getAll_questions',
+        model: QuestionModel
+    });
+
+    // Backbone View for displaying a single Question
+    var QuestionView = Backbone.View.extend({
+        tagName: 'div',
+        className: 'question-container',
+
+        template: _.template(`
+                <div class="question">
+                <hr>
+                <a href="answers?<%= question_id %>"><h6><%= title %></h6></a>
+                    <p><%= body %></p>
+                    <p>| Votes: <%= votes %></p>
+                </div>
+            `),
+
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        }
+    });
+
+    // Backbone View for displaying a list of Questions
+    var QuestionListView = Backbone.View.extend({
+        el: '#questionList',
+
+        initialize: function() {
+            this.collection = new QuestionCollection();
+            this.listenTo(this.collection, 'sync', this.render);
+            this.collection.fetch({
+                reset: true
+            });
+        },
+
+        render: function() {
+            this.$el.empty();
+            this.collection.each(function(question) {
+                var questionView = new QuestionView({
+                    model: question
+                });
+                this.$el.append(questionView.render().el);
+            }, this);
+            return this;
+        }
+    });
+
     var questionFormView = new QuestionFormView();
+    var questionListView = new QuestionListView();
     </script>
-
-
 </body>
 
 </html>

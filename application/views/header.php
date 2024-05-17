@@ -15,7 +15,7 @@
     }
 
     .navbar {
-        background-color: #046CC2;
+        background-color: #15588F;
     }
 
     .navbar a {
@@ -34,7 +34,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        background-color: #046CC2;
+        background-color: #15588F;
         color: white;
         padding-top: 20px;
     }

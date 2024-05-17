@@ -34,22 +34,20 @@ class QuestionController extends CI_Controller {
                         // Retrieve the username from the user details
                         $username = $auth_user_details['username'];
                         $data['username'] = $username;
+                                                // Send a response back to the client
+                        $response = array('status' => 'success', 'message' => "Welcome, $username! ,Data received successfully");
+                        echo json_encode($response);
                         
-                        // Now $username contains the current session user's username
-                        echo "Welcome, $username!";
                     } else {
                         // Handle the case where the user is not authenticated
-                        echo "You are not authenticated.";
+                        $response = array('status' => 'error', 'message' => 'Data received successfully, You are not authenticated.');
+                        echo json_encode($response);
+                        exit;
                     }
 
                     // Insert the data into the database
                     $this->QuestionModel->create($data);
                    
-                    
-                    // Send a response back to the client
-                    $response = array('status' => 'success', 'message' => 'Data received successfully');
-                    echo json_encode($response);
-                    exit;
                 } else {
                     // If the data is not properly parsed, send an error response
                     $response = array('status' => 'error', 'message' => 'Failed to parse data');
@@ -63,6 +61,20 @@ class QuestionController extends CI_Controller {
                 exit;
             }
         } else {
+            // If the request method is not POST, send an error response
+            $response = array('status' => 'error', 'message' => 'Invalid request method');
+            echo json_encode($response);
+            exit;
+        }
+    }
+
+    public function getAll_questions(){
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            
+            $questions = $this->QuestionModel->getAll_questions();
+            echo json_encode($questions);
+        }
+        else {
             // If the request method is not POST, send an error response
             $response = array('status' => 'error', 'message' => 'Invalid request method');
             echo json_encode($response);

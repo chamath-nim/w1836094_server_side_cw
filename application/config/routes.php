@@ -58,7 +58,10 @@ $route['register'] = 'AuthController/register';
 $route['login'] = 'AuthController/login';
 $route['logout'] = 'AuthController/logout';
 
-$route['questions'] = 'QuestionController/create_question';
+$route['create_questions'] = 'QuestionController/create_question';
+$route['getAll_questions'] = 'QuestionController/getAll_questions';
+
+$route['answers/(:num)'] = 'AnswerController/index/$1';
 
 $route['home'] = 'UserPageController/index';
 $route['profile'] = 'UserPageController/myProfile';
