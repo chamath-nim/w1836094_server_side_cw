@@ -59,9 +59,9 @@ $route['login'] = 'AuthController/login';
 $route['logout'] = 'AuthController/logout';
 
 $route['create_questions'] = 'QuestionController/create_question';
-$route['getAll_questions'] = 'QuestionController/getAll_questions';
 
-$route['answers/(:num)'] = 'AnswerController/index/$1';
+$route['question/?(:num)?'] = 'QuestionController/get_question_byId/$1';
+
 
 $route['home'] = 'UserPageController/index';
 $route['profile'] = 'UserPageController/myProfile';

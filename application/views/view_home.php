@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Home</title>
+    <title>Home</title>
     <style>
     .question-header {
         display: flex;
@@ -120,7 +120,7 @@
     <script>
     // Backbone Model
     var QuestionModel = Backbone.Model.extend({
-        url: 'create_questions'
+        url: 'QuestionController/create_question'
     });
 
     // Backbone View for the form
@@ -187,19 +187,19 @@
 
     // Backbone Collection for Questions
     var QuestionCollection = Backbone.Collection.extend({
-        url: 'getAll_questions',
+        url: 'QuestionController/getAll_questions',
         model: QuestionModel
     });
 
     // Backbone View for displaying a single Question
     var QuestionView = Backbone.View.extend({
         tagName: 'div',
-        className: 'question-container',
+        // className: 'question-container',
 
         template: _.template(`
                 <div class="question">
                 <hr>
-                <a href="answers?<%= question_id %>"><h6><%= title %></h6></a>
+                <a href="question<%= question_id %>"><h6><%= title %></h6></a>
                     <p><%= body %></p>
                     <p>| Votes: <%= votes %></p>
                 </div>

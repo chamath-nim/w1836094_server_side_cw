@@ -81,4 +81,65 @@ class QuestionController extends CI_Controller {
             exit;
         }
     }
+
+    public function get_question_byId($id) {
+        $data = $this->QuestionModel->get_question_byId($id);
+        $this->load->view( 'answer',$data );
+    }
+
+    public function update_vote_count(){
+        if ($_SERVER["REQUEST_METHOD"] == "PUT") {
+            
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                // Parse the incoming JSON data
+                $data = json_decode(file_get_contents("php://input"), true);
+                
+                // Check if the data is properly parsed
+                if ($data) {
+                   
+                    $auth_user_details = $this->session->userdata('auth_user');
+                    $username = $auth_user_details['username'];
+                    $owner = $data['owner'];
+
+                    // Check if the user details exist in the session
+                    if ($auth_user_details && ($username == $owner)) {
+                        
+                        $response = array('status' => 'error', 'message' => "Welcome, $username! ,you can't vote your own answer");
+                        echo json_encode($response);
+                        exit;
+                        
+                    } else {
+                        if($this->QuestionModel->update_vote_count($data)){
+                   
+                            $response = array('status' => 'success', 'message' => 'Data received successfully, vote updated.');
+                            echo json_encode($response);
+                            exit;
+                        }
+
+                        else {
+                            $response = array('status' => 'error', 'message' => 'Data received successfully, vote not updated.');
+                            echo json_encode($response);
+                            exit;
+                        }
+                    }
+                    
+                } else {
+                    // If the data is not properly parsed, send an error response
+                    $response = array('status' => 'error', 'message' => 'Failed to parse data');
+                    echo json_encode($response);
+                    exit;
+                }
+            } else {
+                // If the request is not sent via AJAX, send an error response
+                $response = array('status' => 'error', 'message' => 'Invalid request');
+                echo json_encode($response);
+                exit;
+            }
+        } else {
+            // If the request method is not POST, send an error response
+            $response = array('status' => 'error', 'message' => 'Invalid request method');
+            echo json_encode($response);
+            exit;
+        }
+    }
 }
