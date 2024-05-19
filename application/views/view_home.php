@@ -93,7 +93,7 @@
 <body>
     <div class="main-content">
         <div class="question-header">
-            <h1 class="text-capitalize">Questions</h1>
+            <h1 class="text-capitalize">Top Questions</h1>
             <button class="ask-question-btn">Ask Question</button>
         </div>
 

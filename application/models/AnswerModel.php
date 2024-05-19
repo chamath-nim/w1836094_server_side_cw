@@ -26,4 +26,10 @@ class AnswerModel extends CI_Model{
         $this->db->where('answer_id', $data['answer_id']);
         return $this->db->update('answers'); 
     }
+
+    public function accept_answer($answer_id) {
+               $this->db->where('answer_id', $answer_id);
+        return $this->db->update('answers', ['is_accepted' => 1]);
+    }
+
 }

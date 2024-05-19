@@ -69,15 +69,13 @@
         transition: color 0.3s;
     }
 
-    /* Vote count styling */
     #vote-count {
         font-size: 18px;
         font-weight: bold;
         color: #333;
-        margin: 5px 0;
+        margin: 5px;
     }
 
-    /* Answer content styling */
     .answer-content {
         display: flex;
         align-items: center;
@@ -133,6 +131,18 @@
     .comment-btn:hover {
         background-color: #218838;
     }
+
+    .accept-answer {
+        background-color: #0096FE;
+        color: white;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .accept-answer:hover {
+        background-color: #0077CA;
+    }
     </style>
 </head>
 
@@ -184,7 +194,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.1/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone-min.js"></script>
+    <?php
+$auth_user_details = $this->session->userdata('auth_user');
+                    $logged_username = $auth_user_details['username'];
+                    ?>
     <script>
+    var questionOwner = '<?= $username; ?>';
+    var logged_username = '<?= $logged_username; ?>';
+
     var QuestionVoteModel = Backbone.Model.extend({
         url: ' QuestionController/update_vote_count',
         upvote: function() {
@@ -250,6 +267,10 @@
     var AnswerModel = Backbone.Model.extend({
         defaults: {
             body: '',
+            votes: 0,
+            is_accepted: 0,
+            username: '',
+            posted_at: ''
         },
     });
 
@@ -286,6 +307,8 @@
                             <th>
                             <% if (is_accepted == 1) { %>
                             <i class="fas fa-check accept-icon"></i>
+                            <% } else if (questionOwner == logged_username) { %>
+                            <button class="accept-answer">Accept</button>
                             <% } %>
                             </th>
                             <td>
@@ -303,15 +326,21 @@
         events: {
             'click .upvote-icon': 'upvote',
             'click .downvote-icon': 'downvote',
+            'click .accept-answer': 'acceptAnswer',
             'click .comment-btn': 'postComment'
         },
 
         initialize: function() {
             this.listenTo(this.model, 'change:votes', this.render);
+            this.listenTo(this.model, 'change:is_accepted', this.render);
+
         },
 
         render: function() {
-            this.$el.html(this.template(this.model.toJSON()));
+            this.$el.html(this.template(_.extend(this.model.toJSON(), {
+                logged_username: logged_username,
+                questionOwner: questionOwner
+            })));
             return this;
         },
 
@@ -343,6 +372,24 @@
                 }
             });
         },
+
+        acceptAnswer: function() {
+            var formData = {
+                id: this.model.get('id'),
+                is_accepted: 1
+            };
+
+            this.model.save(formData, {
+                url: 'AnswerController/accept_answer',
+                success: function(model, response) {
+                    console.log('Answer accepted successfully:', response);
+                },
+                error: function(model, response) {
+                    console.error('Error accepting answer:', response);
+                }
+            });
+        },
+
         postComment: function() {
             var commentText = this.$('.comment-textarea').val().trim();
             if (!commentText) return;

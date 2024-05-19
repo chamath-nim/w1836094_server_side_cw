@@ -36,9 +36,23 @@ class QuestionModel extends CI_Model{
         $query = $this->db->get_where('questions', array('username' => $username));
         
         if ($query->num_rows() > 0) {
-            return $query->row();
+            return $query->result(); 
         } else {
             return null;
         }
+    }
+
+    public function delete_question($question_id) {
+        $this->db->where('question_id', $question_id);
+        return $this->db->delete('questions');
+    }
+
+    public function search_by_tags($tags) {
+
+        $this->db->select('*');
+        $this->db->from('questions');
+        $this->db->like('tags', $tags['tags']);
+        $query = $this->db->get();
+        return $query->result();
     }
 }

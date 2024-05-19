@@ -63,7 +63,8 @@
                 <form class="d-flex mx-auto my-2 my-lg-0" action="/search" method="GET">
                     <input class="form-control me-2" type="search" name="query" placeholder="Search by tag..."
                         aria-label="Search" style="height: 35px; width: 330px;">
-                    <button class="btn btn-secondary" type="submit" style="height: 35px;">Search</button>
+                    <button class="btn btn-secondary" id="headerSearchButton" type="submit"
+                        style="height: 35px;">Search</button>
                 </form>
             </div>
         </div>
@@ -77,7 +78,7 @@
             <hr class="bg-light">
             <ul class="list-unstyled">
                 <li><a href="home" class="text-white">Home</a></li>
-                <li><a href="myquestions" class="text-white">Questions</a></li>
+                <li><a href="myquestions" class="text-white">My Questions</a></li>
                 <li><a href="profile" class="text-white">Profile</a></li>
             </ul>
         </div>

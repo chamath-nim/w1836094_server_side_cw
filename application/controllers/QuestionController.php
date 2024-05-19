@@ -11,8 +11,6 @@ class QuestionController extends CI_Controller {
     }
     
     public function index(){
-        // $this->load->view( 'header' );
-        // $this->load->view( 'sidebar' );
         $this->load->view( 'view_home' );
   
     }
@@ -153,6 +151,59 @@ class QuestionController extends CI_Controller {
             echo json_encode($questions);
         }
         else {
+            // If the request method is not POST, send an error response
+            $response = array('status' => 'error', 'message' => 'Invalid request method');
+            echo json_encode($response);
+            exit;
+        }
+    }
+
+    public function delete_question($question_id) {
+        if ($_SERVER["REQUEST_METHOD"] == "DELETE") {
+            
+            if (!$this->QuestionModel->delete_question($question_id)) {
+                echo json_encode(['message' => 'Failed to delete question. Please try again.']);
+            } else {
+                echo json_encode(['message' => 'Question and related answers and comments deleted successfully']);
+            }
+        }
+        else {
+            // If the request method is not POST, send an error response
+            $response = array('status' => 'error', 'message' => 'Invalid request method');
+            echo json_encode($response);
+            exit;
+        }
+    }
+
+    public function search_by_tags() {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                // Parse the incoming JSON data
+                $data = json_decode(file_get_contents("php://input"), true);
+                
+                // Check if the data is properly parsed
+                if ($data) {
+                   
+                    // Insert the data into the database
+                    $this->QuestionModel->search_by_tags($data);
+                    $response = array('status' => 'success', 'message' => 'Get questions which have the tag');
+                    echo json_encode($response);
+                    exit;
+                   
+                } else {
+                    // If the data is not properly parsed, send an error response
+                    $response = array('status' => 'error', 'message' => 'Failed to parse data');
+                    echo json_encode($response);
+                    exit;
+                }
+            } else {
+                // If the request is not sent via AJAX, send an error response
+                $response = array('status' => 'error', 'message' => 'Invalid request');
+                echo json_encode($response);
+                exit;
+            }
+        } else {
             // If the request method is not POST, send an error response
             $response = array('status' => 'error', 'message' => 'Invalid request method');
             echo json_encode($response);
