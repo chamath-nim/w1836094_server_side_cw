@@ -52,10 +52,6 @@
         cursor: pointer;
     }
 
-    /* Basic table styles */
-
-
-    /* Table cell styles */
     th,
     td {
         text-align: left;
@@ -108,6 +104,34 @@
         margin-bottom: 10px;
         border-radius: 5px;
         background-color: #DEECFF;
+    }
+
+    .comment-section {
+        margin-top: 10px;
+    }
+
+    .comment-textarea {
+        width: 100%;
+        height: 60px;
+        padding: 10px;
+        margin-bottom: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: vertical;
+    }
+
+    .comment-btn {
+        display: inline-block;
+        padding: 8px 12px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .comment-btn:hover {
+        background-color: #218838;
     }
     </style>
 </head>
@@ -180,10 +204,10 @@
 
             this.save(formData, {
                 success: function(model, response) {
-                    console.log('Vote saved successfully:', response);
+                    alert(response['message']);
                 },
                 error: function(model, response) {
-                    console.error('Error saving vote:', response);
+                    alert('Error saving vote:', response['message']);
                 }
             });
         }
@@ -256,9 +280,7 @@
                                     <i class="fas fa-arrow-down downvote-icon"></i>
                                 </div>
                             </th>
-                            <td>
-                                <p>Added By: <%= username %> - Posted At: <%= posted_at %></p>
-                            </td>
+                            
                         </tr>
                         <tr>
                             <th>
@@ -266,15 +288,22 @@
                             <i class="fas fa-check accept-icon"></i>
                             <% } %>
                             </th>
-                            
+                            <td>
+                                <p>Added By: <%= username %> - Posted At: <%= posted_at %></p>
+                            </td>
                         </tr>
                     </table>
+                    <div class="comment-section">
+                    <textarea class="comment-textarea" placeholder="Add a comment"></textarea>
+                    <button class="comment-btn">Post Comment</button>
+                    </div>
                     </div><br><br>
                     `),
 
         events: {
             'click .upvote-icon': 'upvote',
-            'click .downvote-icon': 'downvote'
+            'click .downvote-icon': 'downvote',
+            'click .comment-btn': 'postComment'
         },
 
         initialize: function() {
@@ -307,12 +336,32 @@
             this.model.save(formData, {
                 url: 'AnswerController/update_vote_count',
                 success: function(model, response) {
+                    alert(response['message']);
+                },
+                error: function(model, response) {
+                    alert('Error saving vote:', response['message']);
+                }
+            });
+        },
+        postComment: function() {
+            var commentText = this.$('.comment-textarea').val().trim();
+            if (!commentText) return;
+
+            var commentData = {
+                answer_id: this.model.get('answer_id'),
+                comment: commentText,
+            };
+
+            this.model.save(commentData, {
+                url: 'CommentController/add_comment',
+                success: function(model, response) {
                     console.log('Vote saved successfully:', response);
                 },
                 error: function(model, response) {
                     console.error('Error saving vote:', response);
                 }
             });
+            this.$('.comment-textarea').val('');
         }
     });
 

@@ -31,4 +31,14 @@ class QuestionModel extends CI_Model{
         $this->db->where('question_id', $data['id']);
         return $this->db->update('questions'); 
     }
+
+    public function getAll_myquestions($username){
+        $query = $this->db->get_where('questions', array('username' => $username));
+        
+        if ($query->num_rows() > 0) {
+            return $query->row();
+        } else {
+            return null;
+        }
+    }
 }

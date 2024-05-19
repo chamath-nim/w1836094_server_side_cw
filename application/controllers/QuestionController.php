@@ -104,7 +104,7 @@ class QuestionController extends CI_Controller {
                     // Check if the user details exist in the session
                     if ($auth_user_details && ($username == $owner)) {
                         
-                        $response = array('status' => 'error', 'message' => "Welcome, $username! ,you can't vote your own answer");
+                        $response = array('status' => 'error', 'message' => "You can't vote your own answer");
                         echo json_encode($response);
                         exit;
                         
@@ -136,6 +136,23 @@ class QuestionController extends CI_Controller {
                 exit;
             }
         } else {
+            // If the request method is not POST, send an error response
+            $response = array('status' => 'error', 'message' => 'Invalid request method');
+            echo json_encode($response);
+            exit;
+        }
+    }
+
+    public function getAll_myquestions(){
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+
+            $auth_user_details = $this->session->userdata('auth_user');
+            $username = $auth_user_details['username'];
+            
+            $questions = $this->QuestionModel->getAll_myquestions($username);
+            echo json_encode($questions);
+        }
+        else {
             // If the request method is not POST, send an error response
             $response = array('status' => 'error', 'message' => 'Invalid request method');
             echo json_encode($response);

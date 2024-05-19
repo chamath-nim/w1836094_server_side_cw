@@ -65,6 +65,7 @@ $route['question/?(:num)?'] = 'QuestionController/get_question_byId/$1';
 
 $route['home'] = 'UserPageController/index';
 $route['profile'] = 'UserPageController/myProfile';
+$route['myquestions'] = 'UserPageController/myQuestion';
 
 
 $route['session_details'] = 'AuthController/getSessionDetails';

@@ -21,4 +21,10 @@ class UserPageController extends CI_Controller {
     public function myProfile(){
         $this->load->view('profile');
     }
+
+    public function myQuestion(){
+        $this->load->view('myquestions');
+    }
+
+    
 }

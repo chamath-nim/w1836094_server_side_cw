@@ -92,7 +92,7 @@ class AnswerController extends CI_Controller {
                     // Check if the user details exist in the session
                     if ($auth_user_details && ($username == $owner)) {
                         
-                        $response = array('status' => 'error', 'message' => "Welcome, $username! ,you can't vote your own answer");
+                        $response = array('status' => 'error', 'message' => "You can't vote your own answer");
                         echo json_encode($response);
                         exit;
                         
