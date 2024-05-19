@@ -188,20 +188,36 @@
     // Backbone Collection for Questions
     var QuestionCollection = Backbone.Collection.extend({
         url: 'QuestionController/getAll_questions',
-        model: QuestionModel
+        model: QuestionModel,
+
+        searchByTags: function(tags) {
+            var self = this;
+            $.ajax({
+                url: 'QuestionController/search_by_tags',
+                data: {
+                    tags: tags
+                },
+                success: function(data) {
+                    self.reset(JSON.parse(data));
+                },
+                error: function() {
+                    console.error('Failed to fetch questions by tags.');
+                }
+            });
+        }
     });
+
 
     // Backbone View for displaying a single Question
     var QuestionView = Backbone.View.extend({
         tagName: 'div',
-        // className: 'question-container',
 
         template: _.template(`
                 <div class="question">
                 <hr>
                 <a href="question<%= question_id %>"><h6><%= title %></h6></a>
                     <p><%= body %></p>
-                    <p>| Votes: <%= votes %></p>
+                    <p>| Votes: <%= votes %> | Tags: <%= tags %></p>
                 </div>
             `),
 
@@ -217,7 +233,7 @@
 
         initialize: function() {
             this.collection = new QuestionCollection();
-            this.listenTo(this.collection, 'sync', this.render);
+            this.listenTo(this.collection, 'reset', this.render);
             this.collection.fetch({
                 reset: true
             });
@@ -225,15 +241,42 @@
 
         render: function() {
             this.$el.empty();
-            this.collection.each(function(question) {
-                var questionView = new QuestionView({
-                    model: question
-                });
-                this.$el.append(questionView.render().el);
-            }, this);
+            if (this.collection.length === 0) {
+                this.$el.append('<p>No questions found.</p>');
+            } else {
+                this.collection.each(function(question) {
+                    var questionView = new QuestionView({
+                        model: question
+                    });
+                    this.$el.append(questionView.render().el);
+                }, this);
+            }
             return this;
         }
     });
+
+    var HeaderView = Backbone.View.extend({
+        el: 'nav',
+
+        events: {
+            'submit #headerSearchButton': 'searchQuestions'
+        },
+
+        searchQuestions: function(event) {
+            event.preventDefault();
+            var tags = this.$('input[name="query"]').val().trim();
+            if (tags) {
+                questionListView.collection.searchByTags(tags);
+            } else {
+                questionListView.collection.fetch({
+                    reset: true
+                });
+            }
+        }
+    });
+
+    // Initialize the header view
+    var headerView = new HeaderView();
 
     var questionFormView = new QuestionFormView();
     var questionListView = new QuestionListView();

@@ -176,33 +176,18 @@ class QuestionController extends CI_Controller {
     }
 
     public function search_by_tags() {
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
             
-            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-                // Parse the incoming JSON data
-                $data = json_decode(file_get_contents("php://input"), true);
+            $tags = $this->input->get('tags');
                 
-                // Check if the data is properly parsed
-                if ($data) {
-                   
-                    // Insert the data into the database
-                    $this->QuestionModel->search_by_tags($data);
-                    $response = array('status' => 'success', 'message' => 'Get questions which have the tag');
-                    echo json_encode($response);
-                    exit;
-                   
-                } else {
-                    // If the data is not properly parsed, send an error response
-                    $response = array('status' => 'error', 'message' => 'Failed to parse data');
-                    echo json_encode($response);
-                    exit;
-                }
+            $questions = $this->QuestionModel->search_by_tags($tags);
+            
+            if (!empty($questions)) {
+                echo json_encode($questions);
             } else {
-                // If the request is not sent via AJAX, send an error response
-                $response = array('status' => 'error', 'message' => 'Invalid request');
-                echo json_encode($response);
-                exit;
+                echo json_encode([]);
             }
+            
         } else {
             // If the request method is not POST, send an error response
             $response = array('status' => 'error', 'message' => 'Invalid request method');

@@ -48,11 +48,12 @@ class QuestionModel extends CI_Model{
     }
 
     public function search_by_tags($tags) {
-
-        $this->db->select('*');
-        $this->db->from('questions');
-        $this->db->like('tags', $tags['tags']);
-        $query = $this->db->get();
-        return $query->result();
+        $query = $this->db->get_where('questions', array('tags' => $tags));
+        
+        if ($query->num_rows() > 0) {
+            return $query->result(); 
+        } else {
+            return [];
+        }
     }
 }

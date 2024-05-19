@@ -60,11 +60,10 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <form class="d-flex mx-auto my-2 my-lg-0" action="/search" method="GET">
+                <form class="d-flex mx-auto my-2 my-lg-0" id="headerSearchButton">
                     <input class="form-control me-2" type="search" name="query" placeholder="Search by tag..."
                         aria-label="Search" style="height: 35px; width: 330px;">
-                    <button class="btn btn-secondary" id="headerSearchButton" type="submit"
-                        style="height: 35px;">Search</button>
+                    <button class="btn btn-secondary" type="submit" style="height: 35px;">Search</button>
                 </form>
             </div>
         </div>
