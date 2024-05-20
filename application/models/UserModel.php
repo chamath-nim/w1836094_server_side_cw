@@ -20,4 +20,14 @@ class UserModel extends CI_Model{
             return false;
         }
     }
+
+    public function get_user_by_id($user_id){
+        $query = $this->db->get_where('users', array('user_id' => $user_id));
+        
+        if ($query->num_rows() > 0) {
+            return $query->row();
+        } else {
+            return null;
+        }
+    }
 }

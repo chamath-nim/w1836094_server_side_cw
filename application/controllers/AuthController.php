@@ -77,9 +77,16 @@ class AuthController extends CI_Controller {
 
     public function logout() {
         
-        // Destroy session
         $this->session->sess_destroy();
-        // Redirect to login page
         redirect('login');
+    }
+
+    public function get_userdata(){
+        $auth_user_details = $this->session->userdata('auth_user');
+        $user_id = $auth_user_details['id'];
+
+        $user_details = $this->UserModel->get_user_by_id($user_id);
+
+        echo json_encode($user_details);
     }
 }
