@@ -86,7 +86,7 @@ class AnswerController extends CI_Controller {
                    
                     $auth_user_details = $this->session->userdata('auth_user');
                     $username = $auth_user_details['username'];
-                    $owner = $data['owner'];
+                    $owner = $data['username'];
 
                     // Check if the user details exist in the session
                     if ($auth_user_details && ($username == $owner)) {

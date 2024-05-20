@@ -272,6 +272,32 @@ $auth_user_details = $this->session->userdata('auth_user');
             username: '',
             posted_at: ''
         },
+
+        upvote: function() {
+            this.set('votes', parseInt(this.get('votes'), 10) + 1);
+            this.saveVote();
+        },
+
+        downvote: function() {
+            this.set('votes', parseInt(this.get('votes'), 10) - 1);
+            this.saveVote();
+        },
+        saveVote: function() {
+            var formData = {
+                id: this.get('id'),
+                votes: this.get('votes'),
+            };
+
+            this.save(formData, {
+                url: 'AnswerController/update_vote_count',
+                success: function(model, response) {
+                    console.log('Vote saved successfully:', response);
+                },
+                error: function(model, response) {
+                    console.error('Error saving vote:', response);
+                }
+            });
+        }
     });
 
     var AnswerView = Backbone.View.extend({
@@ -345,32 +371,11 @@ $auth_user_details = $this->session->userdata('auth_user');
         },
 
         upvote: function() {
-            var votes = this.model.get('votes') + 1;
-            this.model.set('votes', votes);
-            this.saveVote();
+            this.model.upvote();
         },
 
         downvote: function() {
-            var votes = this.model.get('votes') - 1;
-            this.model.set('votes', votes);
-            this.saveVote();
-        },
-
-        saveVote: function() {
-            var formData = {
-                votes: this.model.get('votes'),
-                owner: '<?= $username; ?>'
-            };
-
-            this.model.save(formData, {
-                url: 'AnswerController/update_vote_count',
-                success: function(model, response) {
-                    alert(response['message']);
-                },
-                error: function(model, response) {
-                    alert('Error saving vote:', response['message']);
-                }
-            });
+            this.model.downvote();
         },
 
         acceptAnswer: function() {
